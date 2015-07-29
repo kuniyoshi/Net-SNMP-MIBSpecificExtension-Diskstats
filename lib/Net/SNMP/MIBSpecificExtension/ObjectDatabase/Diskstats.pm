@@ -72,7 +72,7 @@ sub does_update_needed {
     my $self = shift;
     my $now = time;
 
-    return $now + $self->time_to_live > $self->updated_at;
+    return $now > $self->updated_at + $self->time_to_live;
 }
 
 sub read_data_file {

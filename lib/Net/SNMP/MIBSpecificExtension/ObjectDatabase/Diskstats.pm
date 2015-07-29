@@ -85,6 +85,8 @@ sub read_data_file {
     close $FH
         or die "Could not close a data file[", $self->data_file, "]: $!";
 
+    # TODO: partition may need other process, i have no use for partitioned one now.
+
     for my $line ( @lines ) {
         $line =~ s{\A \s+ }{}msx;
         my %stat;
@@ -98,7 +100,7 @@ sub read_data_file {
     return @stats;
 }
 
-sub __get_first_index {
+sub __get_first_index { # Do not want to install List::MoreUtils module, write sub myself :<
     my( $list_ref, $target ) = @_;
     for ( my $i = 0; $i < @{ $list_ref }; $i++ ) {
         if ( $list_ref->[ $i ] eq $target ) {
@@ -118,12 +120,14 @@ sub update_database {
     for my $stat_ref ( @stats ) {
         my $entry_index = __get_first_index( $dev_names_ref, $stat_ref->{device_name} );
 
+        # Keep order of dev_names.  This value will be kept while Database instance lives.
+
         unless ( defined $entry_index ) {
             push @{ $dev_names_ref }, $stat_ref->{device_name};
             $entry_index = $#{ $dev_names_ref };
         }
 
-        $entry_index++; # starts from 1.
+        $entry_index++; # MIB starts index from 1.
 
         for ( my $i = 0; $i < @HEADINGS; $i++ ) {
             my $heading = $HEADINGS[ $i ];

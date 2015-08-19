@@ -100,7 +100,7 @@ sub read_data_file {
     return @stats;
 }
 
-sub __get_first_index { # Do not want to install List::MoreUtils module, write sub myself :<
+sub __get_first_index { # Can not `prereq` List::MoreUtils module, write sub myself :<
     my( $list_ref, $target ) = @_;
     for ( my $i = 0; $i < @{ $list_ref }; $i++ ) {
         if ( $list_ref->[ $i ] eq $target ) {
@@ -127,14 +127,14 @@ sub update_database {
             $entry_index = $#{ $dev_names_ref };
         }
 
-        $entry_index++; # MIB starts index from 1.
+        $entry_index++; # MIB starts it index from 1.
 
         for ( my $i = 0; $i < @HEADINGS; $i++ ) {
             my $heading = $HEADINGS[ $i ];
             my $value = $stat_ref->{ $heading };
             my $object_index = $i + 2; # starts from 2., .1 is diskstatsIndex.
 
-            my $oid = $self->base_oid . ".1.1.$object_index.$entry_index"; # 1 = diskstatsTable, and 1 = diskstatsEntry
+            my $oid = $self->base_oid . ".1.2.$object_index.$entry_index"; # 1 = diskstats, 2 = diskstatsTable
 
             $db_ref->{ $oid }{value} = $value;
             $db_ref->{ $oid }{type} ||= $TYPE{ $heading }
@@ -207,14 +207,14 @@ sub dump_db {
 1;
 
 __END__
-.{diskstatsTable}.{diskstatsEntry}.{diskstatsIndex}
-.{diskstatsTable}.{diskstatsEntry}.{majorDeviceNumber}.
-.{diskstatsTable}.{diskstatsEntry}.{minorDeviceNumber}.
-.{diskstatsTable}.{diskstatsEntry}.{deviceName}.
-.{diskstatsTable}.{diskstatsEntry}.{reads_completed}.
-.{diskstatsTable}.{diskstatsEntry}.{reads_merged}.
-.{diskstatsTable}.{diskstatsEntry}.{sectors_read}.
-.{diskstatsTable}.{diskstatsEntry}.{ms_spent_reading}.
+{diskstats}.{diskstatsTable}.{diskstatsIndex}
+{diskstats}.{diskstatsTable}.{majorDeviceNumber}.
+{diskstats}.{diskstatsTable}.{minorDeviceNumber}.
+{diskstats}.{diskstatsTable}.{deviceName}.
+{diskstats}.{diskstatsTable}.{reads_completed}.
+{diskstats}.{diskstatsTable}.{reads_merged}.
+{diskstats}.{diskstatsTable}.{sectors_read}.
+{diskstats}.{diskstatsTable}.{ms_spent_reading}.
 
  202      16 xvdb 14210588 1025 973385149 34188613 5015331 98808 56848180 3680823 0 4044099 37856289
  202       0 xvda 22505084 17405473 1133586654 127017642 7626463 8616327 140812969 73498221 0 5587430 201278510

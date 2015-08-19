@@ -94,6 +94,12 @@ sub read_data_file {
         die "Could not parse line[$line]: headings count and values count are differ"
             if @values != @HEADINGS;
         @stat{ @HEADINGS } = @values;
+
+        # skip ram, and loop.  The user may confuse when devices count is too large,
+        # and common request is: GetBulk(32)  N=0 M=20.
+        next
+            if $stat{major_device_number} == 1 || $stat{major_device_number} == 7;
+
         push @stats, \%stat;
     }
 

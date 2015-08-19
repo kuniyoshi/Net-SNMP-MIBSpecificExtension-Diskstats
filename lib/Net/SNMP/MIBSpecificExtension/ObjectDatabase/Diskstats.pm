@@ -148,6 +148,20 @@ sub update_database {
         }
     }
 
+    SET_DEVICE_COUNT: {
+        my $oid = $self->base_oid . ".1.1.0";
+        $db_ref->{ $oid }{value} = @stats;
+        $db_ref->{ $oid }{type}  = INTEGER;
+    }
+
+    SET_INDEXES: {
+        for my $i ( 1 .. @stats ) {
+            my $oid = $self->base_oid . ".1.2.1.$i";
+            $db_ref->{ $oid }{value} = $i;
+            $db_ref->{ $oid }{type}  = INTEGER;
+        }
+    }
+
     $self->updated_at( time );
 
     return;
@@ -173,15 +187,21 @@ sub __sort_oid {
     return $lh cmp $rh;
 }
 
+sub __uniq { # Can not `prereq` List::MoreUtils module, write sub myself :<
+    my @list = @_;
+    my %count;
+    return grep { !$count{ $_ }++ } @list;
+}
+
 sub get_next_oid {
     my $self = shift;
     my $oid  = shift;
 
-    my @oids = sort { __sort_oid( $a, $b ) } keys %{ $self->db };
+    my @oids = sort { __sort_oid( $a, $b ) } __uniq( $oid, keys %{ $self->db } );
     my $index = __get_first_index( \@oids, $oid );
 
     return
-        if !defined $index || $index + 1 >= @oids;
+        if $index >= @oids;
 
     return $oids[ $index + 1 ];
 }

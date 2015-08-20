@@ -1,6 +1,6 @@
 <interface>
-	<name>Get /proc/diskstats Information</name>
-	<description>disk stats information</description>
+	<name>Get Disk Activities</name>
+	<description>Disk Activities from /proc/diskstats</description>
 	<oid_index>[% GET base_oid %].1.2.1</oid_index>
 	<oid_num_indexes>[% GET base_oid %].1.1.0</oid_num_indexes>
 	<index_order>dsDeviceName:dsIndex</index_order>
